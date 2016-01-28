@@ -1,4 +1,4 @@
-# automat [![Build Status](https://travis-ci.org/kokujin/automat.svg?branch=master)](https://travis-ci.org/kokujin/automat)
+# automat 
 
 
 ## Install

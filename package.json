@@ -1,8 +1,12 @@
 {
   "name": "automat",
-  "version": "0.0.0",
-  "description": "Micro-generator framework",
+  "version": "0.1.0",
+  "description": "Generator framework",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kokujin/automat/issues"
+  },
+  "homepage": "https://github.com/kokujin/automat",
   "repository": "kokujin/automat",
   "author": {
     "name": ""
@@ -17,9 +21,26 @@
     "index.js"
   ],
   "keywords": [
-    ""
+    "generator",
+    "scaffolding",
+    "build",
+    "generate",
+    "gen",
+    "automat"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "change-case": "^2.1.5",
+    "colors": "^1.0.2",
+    "handlebars": "^2.0.0",
+    "inquirer": "^0.10.0",
+    "interpret": "^1.0.0",
+    "liftoff": "^2.2.0",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.0",
+    "nunjucks": "^2.3.0",
+    "q": "~1.0.1",
+    "v8flags": "^2.0.10"
+  },
   "devDependencies": {
     "ava": "^0.8.0",
     "xo": "^0.12.1"
