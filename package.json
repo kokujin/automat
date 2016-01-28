@@ -1,0 +1,27 @@
+{
+  "name": "automat",
+  "version": "0.0.0",
+  "description": "Micro-generator framework",
+  "license": "MIT",
+  "repository": "kokujin/automat",
+  "author": {
+    "name": ""
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "xo && ava"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    ""
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "ava": "^0.8.0",
+    "xo": "^0.12.1"
+  }
+}
