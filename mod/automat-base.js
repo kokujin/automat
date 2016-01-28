@@ -3,6 +3,7 @@ module.exports = (function () {
 	'use strict';
 	var inquirer = require('inquirer');
 	var handlebars = require('handlebars');
+	var nunjucks = require('nunjucks');
 	var changeCase = require('change-case');
 
 	var automatfilePath = '';
@@ -39,6 +40,7 @@ module.exports = (function () {
 		for (h in helpers) {
 			if (!helpers.hasOwnProperty(h)) { continue; }
 			handlebars.registerHelper(h, helpers[h]);
+			//nunjucks.registerHelper(h, helpers[h]);
 		}
 
 		for (p in partials) {
@@ -46,7 +48,8 @@ module.exports = (function () {
 			handlebars.registerPartial(p, partials[p]);
 		}
 
-		return handlebars.compile(t)(data);
+		//return handlebars.compile(t)(data);
+		return nunjucks.render(t, data);
 	}
 
 	function setGenerator(name, config) { generators[name] = config; }
@@ -84,6 +87,7 @@ module.exports = (function () {
 		getPlopfilePath: getPlopfilePath,
 
 		inquirer: inquirer,
-		handlebars: handlebars
+		handlebars: handlebars,
+		nunjucks: nunjucks
 	};
 })();

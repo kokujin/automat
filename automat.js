@@ -9,28 +9,28 @@ var v8flags = require('v8flags');
 var interpret = require('interpret');
 var colors = require('colors');
 
-var plop = require('./mod/plop-base');
+var automat = require('./mod/automat-base');
 var logic = require('./mod/logic');
 var out = require('./mod/console-out');
 var globalPkg = require('./package.json');
 var generator = argv._[0] || null;
 
-var Plop = new Liftoff({
-	name: 'plop',
+var Automat = new Liftoff({
+	name: 'automat',
 	extensions: interpret.jsVariants,
 	v8flags: v8flags
 });
 
-Plop.launch({
+Automat.launch({
 	cwd: argv.cwd,
-	configPath: argv.plopfile,
+	configPath: argv.automatfile,
 	require: argv.require,
 	completion: argv.completion,
 	verbose: argv.verbose
 }, run);
 
 function run(env) {
-	var generators, plopfilePath;
+	var generators, automatfilePath;
 
 	// handle request for version number
 	if (argv.version || argv.v) {
@@ -43,32 +43,32 @@ function run(env) {
 		return;
 	}
 
-	// set the default base path to the plopfile directory
-	plopfilePath = env.configPath;
-	// abort if there's no plopfile found
-	if (plopfilePath == null) {
-		console.error(colors.red('[PLOP] ') + 'No plopfile found');
+	// set the default base path to the automatfile directory
+	automatfilePath = env.configPath;
+	// abort if there's no automatfile found
+	if (automatfilePath == null) {
+		console.error(colors.red('[AUTOMAT] ') + 'No automatfile found');
 		process.exit(1);
 	}
-	plop.setPlopfilePath(path.dirname(plopfilePath));
+	automat.setAutomatfilePath(path.dirname(automatfilePath));
 
-	// run the plopfile against the plop object
-	require(plopfilePath)(plop);
+	// run the automatfile against the automat object
+	require(automatfilePath)(automat);
 
-	generators = plop.getGeneratorList();
+	generators = automat.getGeneratorList();
 	if (!generator) {
 		out.chooseOptionFromList(generators).then(go);
 	}else if (generators.map(function (v) { return v.name; }).indexOf(generator) > -1) {
 		go(generator);
 	} else {
-		console.error(colors.red('[PLOP] ') + 'Generator "' + generator + '" not found in plopfile');
+		console.error(colors.red('[PLOP] ') + 'Generator "' + generator + '" not found in automatfile');
 		process.exit(1);
 	}
 }
 
 function go(generator) {
-	logic.getPlopData(generator)
-		.then(logic.executePlop)
+	logic.getAutomatData(generator)
+		.then(logic.executeAutomat)
 		.then(function (result) {
 			result.changes.forEach(function(line) {
 				console.log('[SUCCESS]'.green, line.type, line.path);

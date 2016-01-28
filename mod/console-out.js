@@ -12,7 +12,7 @@ module.exports = (function () {
 			{
 				type: 'list',
 				name: 'generator',
-				message: '[PLOP]'.blue + ' Please choose a generator.',
+				message: '[Automat]'.blue + ' Please choose a generator.',
 				choices: plopList.map(function (p) {
 					return {
 						name: p.name + colors.gray(!!p.description ? ' - ' + p.description : ''),

@@ -5,7 +5,7 @@ module.exports = (function () {
 	var path = require('path');
 	var colors = require('colors');
 
-	var plop = require('./plop-base');
+	var automat = require('./automat-base');
 	var fs = require('./fs-promise');
 
 	var genName = '';
@@ -17,8 +17,8 @@ module.exports = (function () {
 	// returns a promise that resolves with the user's answers
 	function getPlopData(gName) {
 		genName = gName;
-		basePath = plop.getPlopfilePath();
-		config = plop.getGenerator(gName);
+		basePath = automat.getPlopfilePath();
+		config = automat.getGenerator(gName);
 
 		var _d = q.defer();
 		var prompts = config.prompts.map(function (p) {
@@ -26,21 +26,21 @@ module.exports = (function () {
 				return p;
 			});
 
-		plop.inquirer.prompt(prompts, function (result) {
+		automat.inquirer.prompt(prompts, function (result) {
 			_d.resolve(result);
 		});
 
 		return _d.promise;
 	}
 
-	// if not already an absolute path, make an absolute path from the basePath (plopfile location)
+	// if not already an absolute path, make an absolute path from the basePath (automatfile location)
 	function makePath(p) {
 		return path.isAbsolute(p) ? p : path.join(basePath, p);
 	}
 
 	// Run the actions for this generator
 	function executePlop(data) {
-		var _d = q.defer();				// defer for overall plop execution
+		var _d = q.defer();				// defer for overall automat execution
 		var _c = q.defer();				// defer to track the chain of action
 		var chain = _c.promise;			// chain promise
 		var changes = [];				// array of changed made by the actions
@@ -124,7 +124,7 @@ module.exports = (function () {
 		var _d = q.defer();
 		var _chain = _d.promise;
 		var template = action.template || '';
-		var filePath = makePath(plop.renderString(action.path || '', data));
+		var filePath = makePath(automat.renderString(action.path || '', data));
 
 		// ------- building the chain of events for this action ------- //
 		// get the template from either template or templateFile
@@ -151,12 +151,12 @@ module.exports = (function () {
 					if (pathExists) { throw Error('File already exists: ' + filePath); }
 					return fs.makeDir(path.dirname(filePath))
 						.then(function () {
-							return fs.writeFile(filePath, plop.renderString(template, data));
+							return fs.writeFile(filePath, automat.renderString(template, data));
 						});
 				} else if (action.type === 'modify') {
 					return fs.readFile(filePath)
 						.then(function (fileData) {
-							fileData = fileData.replace(action.pattern, plop.renderString(template, data));
+							fileData = fileData.replace(action.pattern, automat.renderString(template, data));
 							return fs.writeFile(filePath, fileData);
 						});
 				} else {
