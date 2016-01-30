@@ -20,9 +20,12 @@ coverage
 # node-waf configuration
 .lock-wscript
 
+# Mac.
+.DS_STORE
 
-# Dependency directory
+# Node.
 node_modules
+npm-debug.log
 
 # Optional npm cache directory
 .npm
