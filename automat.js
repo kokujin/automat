@@ -61,7 +61,7 @@ function run(env) {
 	}else if (generators.map(function (v) { return v.name; }).indexOf(generator) > -1) {
 		go(generator);
 	} else {
-		console.error(colors.red('[PLOP] ') + 'Generator "' + generator + '" not found in automatfile');
+		console.error(colors.red('[AUTOMAT] ') + 'Generator "' + generator + '" not found in automatfile');
 		process.exit(1);
 	}
 }
