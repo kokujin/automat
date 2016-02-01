@@ -1,9 +1,9 @@
-module.exports = ( function() {
+module.exports = ( function () {
 	'use strict';
 
 	var q = require( 'q' );
 	var path = require( 'path' );
-	var colors = require( 'colors' );
+	var chalk = require( 'chalk' );
 
 	var automat = require( './automat-base' );
 	var fs = require( './fs-promise' );
@@ -15,18 +15,18 @@ module.exports = ( function() {
 
 	// triggers inquirer with the correct prompts for this generator
 	// returns a promise that resolves with the user's answers
-	function getPlopData( gName ) {
+	function getAutomatData( gName ) {
 		genName = gName;
-		basePath = automat.getPlopfilePath();
+		basePath = automat.getAutomatfilePath();
 		config = automat.getGenerator( gName );
 
 		var _d = q.defer();
-		var prompts = config.prompts.map( function( p ) {
-			p.message = colors.green( '[' + gName.toUpperCase() + '] ' ) + p.message;
+		var prompts = config.prompts.map( function ( p ) {
+			p.message = chalk.green( '[' + gName.toUpperCase() + '] ' ) + p.message;
 			return p;
 		} );
 
-		automat.inquirer.prompt( prompts, function( result ) {
+		automat.inquirer.prompt( prompts, function ( result ) {
 			_d.resolve( result );
 		} );
 
@@ -39,7 +39,7 @@ module.exports = ( function() {
 	}
 
 	// Run the actions for this generator
-	function executePlop( data ) {
+	function executeAutomat( data ) {
 		var _d = q.defer(); // defer for overall automat execution
 		var _c = q.defer(); // defer to track the chain of action
 		var chain = _c.promise; // chain promise
@@ -53,9 +53,8 @@ module.exports = ( function() {
 		}
 
 		// setup the chain of actions for this generator
-		actions.forEach( function( action, idx ) {
-			chain = chain.then( function() {
-
+		actions.forEach( function ( action, idx ) {
+			chain = chain.then( function () {
 				if ( typeof action === 'function' ) {
 					return executeCustomAction( action, idx, data, changes,
 						failedChanges );
@@ -66,7 +65,7 @@ module.exports = ( function() {
 		} );
 
 		// add the final step to the chain (reporting the status)
-		chain = chain.then( function() {
+		chain = chain.then( function () {
 			_d.resolve( {
 				changes: changes,
 				failures: failedChanges
@@ -93,14 +92,14 @@ module.exports = ( function() {
 		try {
 			return q( action( data ) ).then(
 				// show the resolved value in the console
-				function( result ) {
+				function ( result ) {
 					changes.push( {
 						type: action.name || 'function',
-						path: colors.blue( result.toString() )
+						path: chalk.blue( result.toString() )
 					} );
 				},
 				// a rejected promise is treated as a failure
-				function( err ) {
+				function ( err ) {
 					abort = true;
 					failedChanges.push( {
 						type: action.name || 'function',
@@ -129,7 +128,7 @@ module.exports = ( function() {
 
 		// ------- building the chain of events for this action ------- //
 		// get the template from either template or templateFile
-		_chain = _chain.then( function() {
+		_chain = _chain.then( function () {
 			if ( template ) {
 				return template;
 			} else if ( action.templateFile ) {
@@ -138,7 +137,7 @@ module.exports = ( function() {
 				throw Error( 'No valid template found for action #' + ( idx + 1 ) );
 			}
 
-		} ).then( function( templateContent ) {
+		} ).then( function ( templateContent ) {
 			// save template content outside of the promise function scope
 			template = templateContent;
 
@@ -146,19 +145,19 @@ module.exports = ( function() {
 			return fs.fileExists( filePath );
 
 			// do the actual action work
-		} ).then( function( pathExists ) {
+		} ).then( function ( pathExists ) {
 			if ( filePath ) {
 				if ( action.type === 'add' ) {
 					if ( pathExists ) {
 						throw Error( 'File already exists: ' + filePath );
 					}
 					return fs.makeDir( path.dirname( filePath ) )
-						.then( function() {
+						.then( function () {
 							return fs.writeFile( filePath, automat.renderString( template, data ) );
 						} );
 				} else if ( action.type === 'modify' ) {
 					return fs.readFile( filePath )
-						.then( function( fileData ) {
+						.then( function ( fileData ) {
 							fileData = fileData.replace( action.pattern, automat.renderString(
 								template, data ) );
 							return fs.writeFile( filePath, fileData );
@@ -169,12 +168,12 @@ module.exports = ( function() {
 			} else {
 				throw Error( 'No valid path provided for action #' + ( idx + 1 ) );
 			}
-		} ).then( function() {
+		} ).then( function () {
 			changes.push( {
 				type: action.type,
 				path: filePath
 			} );
-		} ).fail( function( err ) {
+		} ).fail( function ( err ) {
 			failedChanges.push( {
 				type: action.type,
 				path: filePath,
@@ -195,7 +194,7 @@ module.exports = ( function() {
 	}
 
 	return {
-		getPlopData: getPlopData,
-		executePlop: executePlop
+		getAutomatData: getAutomatData,
+		executeAutomat: executeAutomat
 	};
 } )();

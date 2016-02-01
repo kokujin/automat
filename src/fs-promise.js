@@ -1,4 +1,4 @@
-module.exports = ( function() {
+module.exports = ( function () {
 	'use strict';
 
 	var q = require( 'q' ),
@@ -18,6 +18,7 @@ module.exports = ( function() {
 	}
 
 	function setFile( path, data ) {
+		console.log('writng file...');
 		return writeFile( path, data, 'utf8' );
 	}
 
@@ -30,7 +31,7 @@ module.exports = ( function() {
 	}
 
 	function getJson( path ) {
-		return getFile( path ).then( function( data ) {
+		return getFile( path ).then( function ( data ) {
 			return JSON.parse( data );
 		} );
 	}
@@ -38,7 +39,7 @@ module.exports = ( function() {
 	function getFolderList( dir ) {
 		var _d = q.defer();
 
-		readDir( dir ).then( function( list ) {
+		readDir( dir ).then( function ( list ) {
 			list = list || [];
 			var pending = list.length || 0,
 				results = [];
@@ -47,9 +48,9 @@ module.exports = ( function() {
 				_d.reject( new Error( 'Nothing to list: ' + dir ) );
 			}
 
-			list.forEach( function( filePath ) {
+			list.forEach( function ( filePath ) {
 				var path = dir + '/' + filePath;
-				stat( path ).then( function( dstat ) {
+				stat( path ).then( function ( dstat ) {
 					if ( dstat && dstat.isDirectory() ) {
 						results.push( filePath );
 					}
@@ -59,7 +60,7 @@ module.exports = ( function() {
 					}
 				} );
 			} );
-		}, function() {
+		}, function () {
 			_d.reject( new Error( 'Folder not found: ' + dir ) );
 		} );
 
@@ -71,7 +72,7 @@ module.exports = ( function() {
 			results = [];
 
 		readDir( dir )
-			.then( function( list ) {
+			.then( function ( list ) {
 
 				var pending = list.length;
 				if ( !pending ) {
@@ -79,12 +80,12 @@ module.exports = ( function() {
 					return;
 				}
 
-				list.forEach( function( file ) {
+				list.forEach( function ( file ) {
 					file = path.join( dir, file );
 					stat( file )
-						.then( function( stat ) {
+						.then( function ( stat ) {
 							if ( stat && stat.isDirectory() ) {
-								fileListRecusive( file ).then( function( res ) {
+								fileListRecusive( file ).then( function ( res ) {
 									results = results.concat( res );
 									if ( !--pending ) {
 										_d.resolve( results );

@@ -1,9 +1,14 @@
-module.exports = ( function() {
+module.exports = ( function () {
 	'use strict';
 	var inquirer = require( 'inquirer' );
 	var handlebars = require( 'handlebars' );
 	var nunjucks = require( 'nunjucks' );
 	var changeCase = require( 'change-case' );
+	var env = new nunjucks.Environment();
+
+	env.addFilter( 'shorten', function ( str, count ) {
+		return str.slice( 0, count || 5 );
+	} );
 
 	var automatfilePath = '';
 	var generators = {};
@@ -22,10 +27,12 @@ module.exports = ( function() {
 		sentenceCase: changeCase.sentence,
 		constantCase: changeCase.constant,
 		titleCase: changeCase.title,
-		pkg: function( key ) {
+		pkg: function ( key ) {
 			return pkgJson[ key ];
 		}
 	};
+
+	var debug = false;
 
 	function addPrompt( name, prompt ) {
 		inquirer.registerPrompt( name, prompt );
@@ -47,19 +54,10 @@ module.exports = ( function() {
 			if ( !helpers.hasOwnProperty( h ) ) {
 				continue;
 			}
-			handlebars.registerHelper( h, helpers[ h ] );
-			//nunjucks.registerHelper(h, helpers[h]);
+			env.addFilter( h, helpers[ h ] );
 		}
 
-		for ( p in partials ) {
-			if ( !partials.hasOwnProperty( p ) ) {
-				continue;
-			}
-			handlebars.registerPartial( p, partials[ p ] );
-		}
-
-		//return handlebars.compile(t)(data);
-		return nunjucks.render( t, data );
+		return env.renderString( t, data );
 	}
 
 	function setGenerator( name, config ) {
@@ -71,7 +69,7 @@ module.exports = ( function() {
 	}
 
 	function getGeneratorList() {
-		return Object.keys( generators ).map( function( gName ) {
+		return Object.keys( generators ).map( function ( gName ) {
 			return {
 				name: gName,
 				description: generators[ gName ].description || ''
@@ -79,7 +77,7 @@ module.exports = ( function() {
 		} );
 	}
 
-	function setPlopfilePath( path ) {
+	function setAutomatfilePath( path ) {
 		try {
 			pkgJson = require( path + '/package.json' );
 		} catch ( err ) {}
@@ -87,7 +85,7 @@ module.exports = ( function() {
 		automatfilePath = path;
 	}
 
-	function getPlopfilePath() {
+	function getAutomatfilePath() {
 		return automatfilePath;
 	}
 
@@ -102,11 +100,11 @@ module.exports = ( function() {
 		getGenerator: getGenerator,
 		getGeneratorList: getGeneratorList,
 
-		setPlopfilePath: setPlopfilePath,
-		getPlopfilePath: getPlopfilePath,
+		setAutomatfilePath: setAutomatfilePath,
+		getAutomatfilePath: getAutomatfilePath,
 
 		inquirer: inquirer,
-		handlebars: handlebars,
-		nunjucks: nunjucks
+		nunjucks: nunjucks,
+		helpers: helpers
 	};
 } )();
